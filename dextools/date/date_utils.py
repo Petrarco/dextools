@@ -1,3 +1,6 @@
+import os
+import sys
+sys.path.insert(1, os.getcwd())
 import datetime as dt
 from datetime               import timedelta
 from dateutil.relativedelta import relativedelta
@@ -75,12 +78,23 @@ class DateUtils:
     def get_quadrimester(self) -> int:
         month = self.get_month()
         return (month - 1) // 3 + 1
+    
+    def check_is_holiday_bank(self):
+        return HolidaysAnbima.check_is_holiday_anbima(self.st_date)
 
     def check_is_business_days(self):
+        if self.get_week() in (6, 7) or self.check_is_holiday_bank():
+            return False
+        else:
+            return True
+
+    def get_next_days(self):
         pass
 
-    def check_is_holiday_bank(self):
-        dates = HolidaysAnbima().get_dates()
+    def get_prev_days(self):
+        pass
+    
+    
 
     def get_date_info(self):
         return {
@@ -98,11 +112,13 @@ class DateUtils:
             "Bimestre": self.get_bimester(),
             "Semestre": self.get_semester(),
             "Trimestre": self.get_trimester(),
+            "Anbima": self.check_is_holiday_bank(),
+            "Dia Ũtil": self.check_is_business_days(),
         }
 
 
 if __name__ == "__main__":
-    data_input = '2024-10-31'  # Formato: 'YYYY-MM-DD'
+    data_input = '2024-11-15'  # Formato: 'YYYY-MM-DD'
     date_info = DateUtils(data_input)
     informacoes_data = date_info.get_date_info()
     for chave, valor in informacoes_data.items():

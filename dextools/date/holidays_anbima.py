@@ -3,7 +3,7 @@ import xlrd
 import datetime as dt
 from datetime import date
 from urllib.request import urlretrieve
-from dextools.date.date_utils import DateUtils
+#from dextools.date.date_utils import DateUtils
 
 class HolidaysAnbima:
     file_url = 'http://www.anbima.com.br/feriados/arqs/feriados_nacionais.xls'
