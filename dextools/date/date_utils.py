@@ -75,6 +75,12 @@ class DateUtils:
         month = self.get_month()
         return (month - 1) // 3 + 1
 
+    def check_is_business_days(self):
+        pass
+
+    def check_is_holiday_bank(self):
+        pass
+
     def get_date_info(self):
         return {
             "Ano": self.get_year(),

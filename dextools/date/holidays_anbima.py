@@ -5,49 +5,47 @@ from urllib.request import urlretrieve
 
 class HolidaysAnbima:
     file_url = 'http://www.anbima.com.br/feriados/arqs/feriados_nacionais.xls'
-    file_path = '/data/feriados_nacionais.xls'
+    file_name = 'feriados_nacionais.xls'
+    file_path = '/data/'
 
-    def __init__(self, file_url=file_url, file_path=file_path ) -> None:
+    def __init__(self, file_url=file_url, file_path=file_path, file_name=file_name ) -> None:
+        self.file_name = file_name
         self.file_path = file_path
-        self.file_url = file_url
+        self.file_url  = file_url 
+        self.file_name_full = os.path.dirname(__file__) + self.file_path + self.file_name    
+
+    def validate_file(self) -> bool:
         
-        from pathlib import Path
+        print(f'filename is {self.file_name_full} ')
+        if os.path.isfile(self.file_name_full):
+            file_status = True
+        else:
+            os.mkdir(os.path.dirname(__file__) + '/data')
+            urlretrieve(self.file_url, filename=self.file_name_full)
+            file_status = os.path.isfile(self.file_name_full)
 
-        # Get the current working directory
-        cwd = Path.cwd()
+        return file_status
+    
+    def get_dates(self) -> list:
 
-        print(f" {file_path} então {os.path.isfile(os.path.dirname(__file__)+self.file_path)}")
-        print(cwd)
-        print(os.path.abspath(__file__))
-        print('__file__:    ', __file__)
-        print('basename:    ', os.path.basename(__file__))
-        print('dirname:     ', os.path.dirname(__file__)+self.file_path)
-    # directory exists
+        if self.validate_file():
 
+            wb = xlrd.open_workbook(self.file_name_full)    
+            ws = wb.sheet_by_index(0)
+            i = 1
+            dates = []
+            while ws.cell_type(i, 0) == 3:
+                y, m, d, _, _, _ = xlrd.xldate_as_tuple(ws.cell_value(i, 0), wb.datemode)
+                dates.append(date(y, m, d))
+                i += 1
+            return dates
+        else:
+            raise ValueError('Não foi possível carregar o arquivo')
 
-
-
-def holidays(url=None, path=None):
-    if not url:
-        url = 'http://www.anbima.com.br/feriados/arqs/feriados_nacionais.xls'
-    if not path:
-        path = 'data/feriados_nacionais.xls'
-    try:
-        wb = xlrd.open_workbook(path)
-    except:
-        response = urlretrieve(url, filename=path)
-        wb = xlrd.open_workbook(path)
-    ws = wb.sheet_by_index(0)
-    i = 1
-    dates = []
-    while ws.cell_type(i, 0) == 3:
-        y, m, d, _, _, _ = xlrd.xldate_as_tuple(ws.cell_value(i, 0), wb.datemode)
-        dates.append(date(y, m, d))
-        i += 1
-    return dates
 
 
 if __name__ == '__main__':
     #print(holidays())
-    HolidaysAnbima()
+    print(str(HolidaysAnbima().get_dates()))
+    
 
