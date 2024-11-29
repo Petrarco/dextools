@@ -1,6 +1,7 @@
 import datetime as dt
 from datetime               import timedelta
 from dateutil.relativedelta import relativedelta
+from dextools.date.holidays_anbima import HolidaysAnbima
 
 
 class DateUtils:
@@ -79,7 +80,7 @@ class DateUtils:
         pass
 
     def check_is_holiday_bank(self):
-        pass
+        dates = HolidaysAnbima().get_dates()
 
     def get_date_info(self):
         return {

@@ -1,7 +1,9 @@
 import os
 import xlrd
+import datetime as dt
 from datetime import date
 from urllib.request import urlretrieve
+from dextools.date.date_utils import DateUtils
 
 class HolidaysAnbima:
     file_url = 'http://www.anbima.com.br/feriados/arqs/feriados_nacionais.xls'
@@ -14,7 +16,7 @@ class HolidaysAnbima:
         self.file_url  = file_url 
         self.file_name_full = os.path.dirname(__file__) + self.file_path + self.file_name    
 
-    def validate_file(self) -> bool:
+    def _validate_file(self) -> bool:
         
         print(f'filename is {self.file_name_full} ')
         if os.path.isfile(self.file_name_full):
@@ -28,7 +30,7 @@ class HolidaysAnbima:
     
     def get_dates(self) -> list:
 
-        if self.validate_file():
+        if self._validate_file():
 
             wb = xlrd.open_workbook(self.file_name_full)    
             ws = wb.sheet_by_index(0)
@@ -41,11 +43,24 @@ class HolidaysAnbima:
             return dates
         else:
             raise ValueError('Não foi possível carregar o arquivo')
+        
+    def check_is_holiday_anbima(st_dt_refe):
 
+        datas = HolidaysAnbima().get_dates()  
+        dt_aux = dt.datetime.strptime(st_dt_refe, '%Y-%m-%d')
+        dt_refe = dt.date(dt_aux.year, dt_aux.month, dt_aux.day)
+
+        if dt_refe in datas:
+            is_holiday = True
+        else:
+            is_holiday = False
+        
+        return is_holiday
 
 
 if __name__ == '__main__':
-    #print(holidays())
-    print(str(HolidaysAnbima().get_dates()))
+    #print(holidays())    
+    datas = HolidaysAnbima().get_dates()    
+    print(HolidaysAnbima.check_is_holiday_anbima('2024-11-15'))
     
 
